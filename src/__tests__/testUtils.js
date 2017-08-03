@@ -26,3 +26,10 @@ export const mockComponent = (type, domElement = 'div') => props =>
 
 export const extractPropsFromWrapper = (wrapper, index = 0) =>
   removeDataFromProps(wrapper.find('div').at(index).props());
+
+export const expectMockToMatch = ({ mock }, numberOfCalls) => {
+  expect(mock.calls.length).toBe(numberOfCalls);
+  for (var i = 0; i < numberOfCalls; i++) {
+    expect(mock.calls[i]).toMatchSnapshot();
+  }
+};
