@@ -1,4 +1,5 @@
 import React from 'react';
+import uuid from 'uuid';
 import EmailPane from '../../field/email/email_pane';
 import PasswordPane from '../../field/password/password_pane';
 import UsernamePane from '../../field/username/username_pane';
@@ -10,6 +11,11 @@ import {
 } from '../../connection/database/index';
 
 export default class SignUpPane extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { uuid: uuid() };
+  }
+
   render() {
     const {
       emailInputPlaceholder,
@@ -23,20 +29,26 @@ export default class SignUpPane extends React.Component {
     } = this.props;
 
     const headerText = instructions || null;
-    const header = headerText && <p>{headerText}</p>;
+    const header =
+      headerText &&
+      <p>
+        {headerText}
+      </p>;
 
-    const usernamePane = !onlyEmail && databaseConnectionRequiresUsername(model)
-      ? <UsernamePane
-          i18n={i18n}
-          lock={model}
-          placeholder={usernameInputPlaceholder}
-          validateFormat={true}
-        />
-      : null;
+    const usernamePane =
+      !onlyEmail && databaseConnectionRequiresUsername(model)
+        ? <UsernamePane
+            initialValue={this.state.uuid}
+            i18n={i18n}
+            lock={model}
+            placeholder={usernameInputPlaceholder}
+            validateFormat={true}
+          />
+        : null;
 
     const fields =
       !onlyEmail &&
-      additionalSignUpFields(model).map(x => (
+      additionalSignUpFields(model).map(x =>
         <CustomInput
           iconUrl={x.get('icon')}
           key={x.get('name')}
@@ -47,7 +59,7 @@ export default class SignUpPane extends React.Component {
           type={x.get('type')}
           validator={x.get('validator')}
         />
-      ));
+      );
 
     const passwordPane =
       !onlyEmail &&

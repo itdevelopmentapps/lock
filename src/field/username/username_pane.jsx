@@ -9,10 +9,16 @@ import { debouncedRequestAvatar, requestAvatar } from '../../avatar';
 
 export default class UsernamePane extends React.Component {
   componentDidMount() {
-    const { lock } = this.props;
+    const { lock, validateFormat, usernameStyle, initialValue } = this.props;
     if (l.ui.avatar(lock) && c.username(lock)) {
       requestAvatar(l.id(lock), c.username(lock));
     }
+
+    this.updateValue(lock, validateFormat, usernameStyle, initialValue);
+  }
+
+  updateValue(lock, validateFormat, usernameStyle, value) {
+    swap(updateEntity, 'lock', l.id(lock), setUsername, value, usernameStyle, validateFormat);
   }
 
   handleChange(e) {
@@ -21,16 +27,9 @@ export default class UsernamePane extends React.Component {
       debouncedRequestAvatar(l.id(lock), e.target.value);
     }
 
-    swap(
-      updateEntity,
-      'lock',
-      l.id(lock),
-      setUsername,
-      e.target.value,
-      usernameStyle,
-      validateFormat
-    );
+    this.updateValue(lock, validateFormat, usernameStyle, e.target.value);
   }
+
   handleBlur() {
     const { lock } = this.props;
     const connectionResolver = l.connectionResolver(lock);
@@ -85,6 +84,7 @@ export default class UsernamePane extends React.Component {
 UsernamePane.propTypes = {
   i18n: PropTypes.object.isRequired,
   lock: PropTypes.object.isRequired,
+  initialValue: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
   validateFormat: PropTypes.bool.isRequired,
   usernameStyle: PropTypes.oneOf(['any', 'email', 'username'])
@@ -92,5 +92,6 @@ UsernamePane.propTypes = {
 
 UsernamePane.defaultProps = {
   validateFormat: false,
+  initialValue: '',
   usernameStyle: 'username'
 };

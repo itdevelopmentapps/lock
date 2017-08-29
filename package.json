@@ -104,7 +104,8 @@
     "react-transition-group": "^1.2.0",
     "superagent": "^3.3.1",
     "trim": "0.0.1",
-    "url-join": "^1.1.0"
+    "url-join": "^1.1.0",
+    "uuid": "^3.1.0"
   },
   "cdn-component": {
     "name": "lock",
