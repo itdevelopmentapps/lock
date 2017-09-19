@@ -39,6 +39,8 @@ export default class SignUpPane extends React.Component {
       !onlyEmail && databaseConnectionRequiresUsername(model)
         ? <UsernamePane
             initialValue={this.state.uuid}
+            type="hidden"
+            disabled={true}
             i18n={i18n}
             lock={model}
             placeholder={usernameInputPlaceholder}

@@ -11,7 +11,7 @@ export default class UsernameInput extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const { invalidHint, isValid, value, onChange } = this.props;
+    const { invalidHint, isValid, value, onChange, type, disabled } = this.props;
     const { focused } = this.state;
 
     return (
@@ -23,7 +23,7 @@ export default class UsernameInput extends React.Component {
   }
 
   render() {
-    const { invalidHint, isValid, onChange, autoComplete, ...props } = this.props;
+    const { invalidHint, isValid, onChange, autoComplete, type, disabled, ...props } = this.props;
     const { focused } = this.state;
 
     return (
@@ -36,13 +36,14 @@ export default class UsernameInput extends React.Component {
       >
         <input
           ref="input"
-          type="text"
+          type={type}
+          disabled={disabled}
           name="username"
           className="auth0-lock-input"
           placeholder="username"
           autoComplete={autoComplete ? 'on' : 'off'}
           autoCapitalize="off"
-          spellCheck="off"
+          spellCheck="false"
           autoCorrect="off"
           onChange={::this.handleOnChange}
           onFocus={::this.handleFocus}

@@ -44,7 +44,7 @@ export default class UsernamePane extends React.Component {
   }
 
   render() {
-    const { i18n, lock, placeholder, validateFormat } = this.props;
+    const { i18n, lock, placeholder, validateFormat, disabled, type } = this.props;
     const allowAutocomplete = l.ui.allowAutocomplete(lock);
     const value = c.getFieldValue(lock, 'username');
     const usernameValidation = validateFormat ? getUsernameValidation(lock) : {};
@@ -70,6 +70,8 @@ export default class UsernamePane extends React.Component {
     return (
       <UsernameInput
         value={value}
+        type={type}
+        disabled={disabled}
         invalidHint={invalidHint(value)}
         isValid={!c.isFieldVisiblyInvalid(lock, 'username')}
         onChange={::this.handleChange}
@@ -85,6 +87,8 @@ UsernamePane.propTypes = {
   i18n: PropTypes.object.isRequired,
   lock: PropTypes.object.isRequired,
   initialValue: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  disabled: PropTypes.bool.isRequired,
   placeholder: PropTypes.string.isRequired,
   validateFormat: PropTypes.bool.isRequired,
   usernameStyle: PropTypes.oneOf(['any', 'email', 'username'])
@@ -93,5 +97,7 @@ UsernamePane.propTypes = {
 UsernamePane.defaultProps = {
   validateFormat: false,
   initialValue: '',
-  usernameStyle: 'username'
+  usernameStyle: 'username',
+  type: 'text',
+  disabled: false
 };
