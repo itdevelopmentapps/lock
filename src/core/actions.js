@@ -194,6 +194,15 @@ export function logIn(
   });
 }
 
+export function checkSession(id, params = {}) {
+  webApi.checkSession(id, params, (err, result) => {
+    if (err) {
+      return logInError(id, [], err);
+    }
+    return logInSuccess(id, result);
+  });
+}
+
 export function logInSuccess(id, result) {
   const m = read(getEntity, 'lock', id);
 
@@ -208,7 +217,7 @@ export function logInSuccess(id, result) {
   }
 }
 
-function logInError(id, fields, error, localHandler) {
+function logInError(id, fields, error, localHandler = (_id, _error, _fields, next) => next()) {
   const errorCode = error.error || error.code;
   localHandler(id, error, fields, () =>
     setTimeout(() => {

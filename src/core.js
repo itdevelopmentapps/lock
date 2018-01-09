@@ -120,7 +120,7 @@ export default class Base extends EventEmitter {
           tabs: screen.renderTabs(m),
           terms: screen.renderTerms(m, i18nProp.html('signUpTerms')),
           title: getScreenTitle(m),
-          transitionName: screen.name === 'loading' ? 'fade' : 'horizontal-fade',
+          classNames: screen.name === 'loading' ? 'fade' : 'horizontal-fade',
           scrollGlobalMessagesIntoView: l.ui.scrollGlobalMessagesIntoView(m)
         };
         render(l.ui.containerID(m), props);
@@ -159,11 +159,15 @@ export default class Base extends EventEmitter {
   }
 
   getProfile(token, cb) {
-    return webAPI.getProfile(this.id, token, cb);
+    return this.getUserInfo(token, cb);
   }
 
   getUserInfo(token, cb) {
     return webAPI.getUserInfo(this.id, token, cb);
+  }
+
+  checkSession(options, cb) {
+    return webAPI.checkSession(this.id, options, cb);
   }
 
   logout(query = {}) {

@@ -34,7 +34,7 @@ import KerberosScreen from '../connection/enterprise/kerberos_screen';
 import HRDScreen from '../connection/enterprise/hrd_screen';
 import EnterpriseQuickAuthScreen from '../connection/enterprise/quick_auth_screen';
 import { hasSkippedQuickAuth } from '../quick_auth';
-import { lastUsedConnection } from '../core/sso/index';
+import * as sso from '../core/sso/index';
 import LoadingScreen from '../core/loading_screen';
 import ErrorScreen from '../core/error_screen';
 import LastLoginScreen from '../core/sso/last_login_screen';
@@ -94,14 +94,18 @@ function validateAllowedConnections(m) {
   if (defaultDatabaseConnectionName(m) && !defaultDatabaseConnection(m)) {
     l.warn(
       m,
-      `The provided default database connection "${defaultDatabaseConnectionName(m)}" is not enabled.`
+      `The provided default database connection "${defaultDatabaseConnectionName(
+        m
+      )}" is not enabled.`
     );
   }
 
   if (defaultEnterpriseConnectionName(m) && !defaultEnterpriseConnection(m)) {
     l.warn(
       m,
-      `The provided default enterprise connection "${defaultEnterpriseConnectionName(m)}" is not enabled or does not allow email/password authentication.`
+      `The provided default enterprise connection "${defaultEnterpriseConnectionName(
+        m
+      )}" is not enabled or does not allow email/password authentication.`
     );
   }
 
@@ -172,11 +176,14 @@ class Classic {
         }
 
         if (l.ui.rememberLastLogin(m)) {
-          const conn = lastUsedConnection(m);
-          if (conn && isSuccess(m, 'sso')) {
-            if (l.hasConnection(m, conn.get('name'))) {
-              return new LastLoginScreen();
-            }
+          const lastUsedConnection = sso.lastUsedConnection(m);
+          const lastUsedUsername = sso.lastUsedUsername(m);
+          if (
+            lastUsedConnection &&
+            isSuccess(m, 'sso') &&
+            l.hasConnection(m, lastUsedConnection.get('name'))
+          ) {
+            return new LastLoginScreen();
           }
         }
       }

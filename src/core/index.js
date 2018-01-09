@@ -27,13 +27,11 @@ export function setup(id, clientID, domain, options, hookRunner, emitEventFn) {
       emitEventFn: emitEventFn,
       hookRunner: hookRunner,
       useTenantInfo: options.__useTenantInfo || false,
-      oidcConformant: options.oidcConformant || false,
       hashCleanup: options.hashCleanup === false ? false : true,
       allowedConnections: Immutable.fromJS(options.allowedConnections || []),
       ui: extractUIOptions(id, options),
-      defaultADUsernameFromEmailPrefix: options.defaultADUsernameFromEmailPrefix === false
-        ? false
-        : true,
+      defaultADUsernameFromEmailPrefix:
+        options.defaultADUsernameFromEmailPrefix === false ? false : true,
       prefill: options.prefill || {},
       connectionResolver: options.connectionResolver
     })
@@ -68,10 +66,6 @@ export function useTenantInfo(m) {
   return get(m, 'useTenantInfo');
 }
 
-export function oidcConformant(m) {
-  return get(m, 'oidcConformant');
-}
-
 export function connectionResolver(m) {
   return get(m, 'connectionResolver');
 }
@@ -90,11 +84,15 @@ export function setResolvedConnection(m, resolvedConnection) {
       'Invalid connection type. Only database connections can be resolved with a custom resolver.'
     );
   }
-  return set(m, 'resolvedConnection', resolvedConnection);
+  return set(m, 'resolvedConnection', Immutable.fromJS(resolvedConnection));
 }
 
 export function resolvedConnection(m) {
-  return get(m, 'resolvedConnection');
+  const resolvedConnection = get(m, 'resolvedConnection');
+  if (!resolvedConnection) {
+    return undefined;
+  }
+  return findConnection(m, resolvedConnection.get('name'));
 }
 
 export function languageBaseUrl(m) {
@@ -163,9 +161,10 @@ function extractUIOptions(id, options) {
     containerID: options.container || `auth0-lock-container-${id}`,
     appendContainer: !options.container,
     autoclose: undefined === options.autoclose ? false : closable && options.autoclose,
-    autofocus: undefined === options.autofocus
-      ? !(options.container || isSmallScreen())
-      : !!options.autofocus,
+    autofocus:
+      undefined === options.autofocus
+        ? !(options.container || isSmallScreen())
+        : !!options.autofocus,
     avatar: avatar,
     avatarProvider: avatarProvider,
     logo: typeof logo === 'string' ? logo : undefined,
@@ -182,9 +181,10 @@ function extractUIOptions(id, options) {
     allowAutocomplete: !!options.allowAutocomplete,
     authButtonsTheme: typeof authButtons === 'object' ? authButtons : {},
     allowShowPassword: !!options.allowShowPassword,
-    scrollGlobalMessagesIntoView: undefined === options.scrollGlobalMessagesIntoView
-      ? true
-      : !!options.scrollGlobalMessagesIntoView
+    scrollGlobalMessagesIntoView:
+      undefined === options.scrollGlobalMessagesIntoView
+        ? true
+        : !!options.scrollGlobalMessagesIntoView
   });
 }
 
@@ -245,9 +245,8 @@ function extractAuthOptions(options) {
     sso,
     state,
     nonce
-  } = options.auth || {};
-
-  let { oidcConformant } = options;
+  } =
+    options.auth || {};
 
   audience = typeof audience === 'string' ? audience : undefined;
   connectionScopes = typeof connectionScopes === 'object' ? connectionScopes : {};
@@ -262,30 +261,12 @@ function extractAuthOptions(options) {
   // if responseType was not set and there is a redirectUrl, it defaults to code. Otherwise token.
   responseType = typeof responseType === 'string' ? responseType : redirectUrl ? 'code' : 'token';
   // now we set the default because we already did the validation
-  redirectUrl = redirectUrl || window.location.href;
+  redirectUrl = redirectUrl || `${window.location.origin}${window.location.pathname}`;
 
   sso = typeof sso === 'boolean' ? sso : true;
 
-  if (!oidcConformant && trim(params.scope || '') === 'openid profile') {
-    warn(
-      options,
-      "Usage of scope 'openid profile' is not recommended. See https://auth0.com/docs/scopes for more details."
-    );
-  }
-
-  if (oidcConformant && !redirect && responseType.indexOf('id_token') > -1) {
-    throw new Error("It is not possible to request an 'id_token' while using popup mode.");
-  }
-
-  if (!oidcConformant && audience) {
-    throw new Error(
-      'It is not possible to use the `auth.audience` option when the `oidcConformant` flag is set to false'
-    );
-  }
-
-  // for legacy flow, the scope should default to openid
-  if (!oidcConformant && !params.scope) {
-    params.scope = 'openid';
+  if (!params.scope) {
+    params.scope = 'openid profile email';
   }
 
   return Immutable.fromJS({
@@ -304,7 +285,9 @@ function extractAuthOptions(options) {
 }
 
 export function withAuthOptions(m, opts) {
-  return Immutable.fromJS(opts).merge(get(m, 'auth')).toJS();
+  return Immutable.fromJS(opts)
+    .merge(get(m, 'auth'))
+    .toJS();
 }
 
 function extractClientBaseUrlOption(opts, domain) {
@@ -353,9 +336,10 @@ export function extractTenantBaseUrlOption(opts, domain) {
   var domain;
 
   if (endsWith(hostname, DOT_AUTH0_DOT_COM)) {
-    domain = parts.length > 3
-      ? 'https://cdn.' + parts[parts.length - 3] + DOT_AUTH0_DOT_COM
-      : AUTH0_US_CDN_URL;
+    domain =
+      parts.length > 3
+        ? 'https://cdn.' + parts[parts.length - 3] + DOT_AUTH0_DOT_COM
+        : AUTH0_US_CDN_URL;
 
     return urljoin(domain, 'tenants', 'v1', `${tenant_name}.js`);
   } else {
@@ -419,7 +403,10 @@ export function allowedConnections(m) {
 
 export function connections(m, type = undefined, ...strategies) {
   if (arguments.length === 1) {
-    return tget(m, 'connections', Map()).filter((v, k) => k !== 'unknown').valueSeq().flatten(true);
+    return tget(m, 'connections', Map())
+      .filter((v, k) => k !== 'unknown')
+      .valueSeq()
+      .flatten(true);
   }
 
   const xs = tget(m, ['connections', type], List());

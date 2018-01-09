@@ -21,6 +21,7 @@ describe('LastLoginScreen', () => {
 
     jest.mock('quick-auth/actions', () => ({
       logIn: jest.fn(),
+      checkSession: jest.fn(),
       skipQuickAuth: jest.fn()
     }));
 
@@ -36,7 +37,9 @@ describe('LastLoginScreen', () => {
     }));
 
     jest.mock('connection/social/index', () => ({
-      STRATEGIES: {},
+      STRATEGIES: {
+        twitter: 'Twitter'
+      },
       authButtonsTheme: () => ({
         get: () => undefined
       })
@@ -89,13 +92,37 @@ describe('LastLoginScreen', () => {
       'waad',
       'some-other-strategy'
     ].forEach(testStrategy);
+
+    it(`when strategy is empty, use name instead`, () => {
+      require('core/sso/index').lastUsedConnection = () =>
+        Immutable.fromJS({
+          name: testStrategyName
+        });
+      const Component = getComponent();
+      expectComponent(<Component {...defaultProps} />).toMatchSnapshot();
+    });
+  });
+  describe('renders correct buttonLabel', () => {
+    it('uses SOCIAL_STRATEGY mapping when there is not a lastUsedUsername', () => {
+      require('core/sso/index').lastUsedConnection = () => ({
+        get: () => 'twitter'
+      });
+      require('core/sso/index').lastUsedUsername = () => undefined;
+      const Component = getComponent();
+      expectComponent(<Component {...defaultProps} />).toMatchSnapshot();
+    });
+    it('uses lastUsedConnectionName when there is not a lastUsedUsername and no SOCIAL_STRATEGY mapping', () => {
+      require('core/sso/index').lastUsedUsername = () => undefined;
+      const Component = getComponent();
+      expectComponent(<Component {...defaultProps} />).toMatchSnapshot();
+    });
   });
   it('calls logIn in the buttonClickHandler', () => {
     const Component = getComponent();
     const wrapper = mount(<Component {...defaultProps} />);
     const props = extractPropsFromWrapper(wrapper);
     props.buttonClickHandler();
-    const { mock } = require('quick-auth/actions').logIn;
+    const { mock } = require('quick-auth/actions').checkSession;
     expect(mock.calls.length).toBe(1);
     expect(mock.calls[0][0]).toBe('id');
     expect(mock.calls[0][1].get()).toBe('lastUsedConnection');

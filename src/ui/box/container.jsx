@@ -2,6 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Chrome from './chrome';
 import { CloseButton } from './button';
+import * as l from '../../core/index';
+import * as c from '../../field/index';
+import { swap, updateEntity } from '../../store/index';
 
 const badgeSvg = (
   <svg focusable="false" width="58px" height="21px" viewBox="0 0 462 168">
@@ -62,6 +65,21 @@ export default class Container extends React.Component {
     super(props);
     this.state = { isOpen: false };
   }
+  checkConnectionResolver(done) {
+    const { contentProps } = this.props;
+    const lock = contentProps.model;
+    const connectionResolver = l.connectionResolver(lock);
+    if (!connectionResolver) {
+      return done();
+    }
+    const { connections, id } = lock.get('client').toJS();
+    const context = { connections, id };
+    const userInputValue = c.getFieldValue(lock, 'username') || c.getFieldValue(lock, 'email');
+    connectionResolver(userInputValue, context, resolvedConnection => {
+      swap(updateEntity, 'lock', l.id(lock), m => l.setResolvedConnection(m, resolvedConnection));
+      done();
+    });
+  }
 
   componentDidMount() {
     if (this.props.isModal) {
@@ -81,15 +99,18 @@ export default class Container extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    const { submitHandler } = this.props;
-    if (submitHandler) {
-      setTimeout(() => {
-        if (!this.props.isSubmitting) {
-          this.refs.chrome.focusError();
-        }
-      }, 17);
-      submitHandler();
-    }
+
+    this.checkConnectionResolver(() => {
+      const { submitHandler } = this.props;
+      if (submitHandler) {
+        setTimeout(() => {
+          if (!this.props.isSubmitting) {
+            this.refs.chrome.focusError();
+          }
+        }, 17);
+        submitHandler();
+      }
+    });
   }
 
   handleClose() {
@@ -134,7 +155,7 @@ export default class Container extends React.Component {
       tabs,
       terms,
       title,
-      transitionName,
+      classNames,
       scrollGlobalMessagesIntoView
     } = this.props;
 
@@ -183,7 +204,7 @@ export default class Container extends React.Component {
     }
 
     return (
-      <div className={className} ref="container">
+      <div className={className}>
         {overlay}
         <div className="auth0-lock-center">
           <form className="auth0-lock-widget" method="post" onSubmit={::this.handleSubmit}>
@@ -210,7 +231,7 @@ export default class Container extends React.Component {
                 tabs={tabs}
                 terms={terms}
                 title={title}
-                transitionName={transitionName}
+                classNames={classNames}
                 scrollGlobalMessagesIntoView={scrollGlobalMessagesIntoView}
               />
             </div>
@@ -244,7 +265,7 @@ Container.propTypes = {
   tabs: PropTypes.bool,
   terms: PropTypes.element,
   title: PropTypes.string,
-  transitionName: PropTypes.string.isRequired,
+  classNames: PropTypes.string.isRequired,
   scrollGlobalMessagesIntoView: PropTypes.bool
   // escHandler
   // submitHandler,
@@ -261,7 +282,9 @@ export const defaultProps = (Container.defaultProps = {
   disableSubmitButton: false,
   isMobile: false,
   isSubmitting: false,
-  logo: `${isFileProtocol ? 'https:' : ''}//cdn.auth0.com/styleguide/components/1.0.8/media/logos/img/badge.png`,
+  logo: `${isFileProtocol
+    ? 'https:'
+    : ''}//cdn.auth0.com/styleguide/components/1.0.8/media/logos/img/badge.png`,
   primaryColor: '#ea5323',
   showBadge: true,
   scrollGlobalMessagesIntoView: true

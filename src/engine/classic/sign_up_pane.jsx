@@ -29,28 +29,24 @@ export default class SignUpPane extends React.Component {
     } = this.props;
 
     const headerText = instructions || null;
-    const header =
-      headerText &&
-      <p>
-        {headerText}
-      </p>;
+    const header = headerText && <p>{headerText}</p>;
 
     const usernamePane =
-      !onlyEmail && databaseConnectionRequiresUsername(model)
-        ? <UsernamePane
-            initialValue={this.state.uuid}
-            type="hidden"
-            disabled={true}
-            i18n={i18n}
-            lock={model}
-            placeholder={usernameInputPlaceholder}
-            validateFormat={true}
-          />
-        : null;
+      !onlyEmail && databaseConnectionRequiresUsername(model) ? (
+        <UsernamePane
+          initialValue={this.state.uuid}
+          type="hidden"
+          disabled={true}
+          i18n={i18n}
+          lock={model}
+          placeholder={usernameInputPlaceholder}
+          validateFormat={true}
+        />
+      ) : null;
 
     const fields =
       !onlyEmail &&
-      additionalSignUpFields(model).map(x =>
+      additionalSignUpFields(model).map(x => (
         <CustomInput
           iconUrl={x.get('icon')}
           key={x.get('name')}
@@ -61,17 +57,17 @@ export default class SignUpPane extends React.Component {
           type={x.get('type')}
           validator={x.get('validator')}
         />
-      );
+      ));
 
-    const passwordPane =
-      !onlyEmail &&
+    const passwordPane = !onlyEmail && (
       <PasswordPane
         i18n={i18n}
         lock={model}
         placeholder={passwordInputPlaceholder}
         policy={passwordStrengthPolicy(model)}
         strengthMessages={passwordStrengthMessages}
-      />;
+      />
+    );
 
     return (
       <div>

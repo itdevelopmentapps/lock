@@ -1,5 +1,110 @@
 # Change Log
 
+## [v11.0.0](https://github.com/auth0/lock/tree/v11.0.0) (2017-12-21)
+[Full Changelog](https://github.com/auth0/lock/compare/v10.23.0...v11.0.0)
+
+Lock v11 is designed for embedded login scenarios and **is not supported in centralized login scenarios** (i.e. Hosted Login Pages). You need to keep using Lock v10 in the Hosted Login Page.
+
+We wrote a [Migration Guide](https://auth0.com/docs/libraries/lock/v11/migration-guide) to make upgrading your app easy. 
+
+**Breaking change**
+`lock.getProfile` now expects an access\_token as the first parameter. You'll need to update your code to change the parameter sent (v10 expected an id_token).
+
+**Removed**
+The `oidcConformant` flag was used to force Lock v10 to not call legacy endpoints. Lock v11 never uses legacy endpoint so the flag is not needed anymore. If specified, it will be ignored.
+
+**Changed**
+Lock v11 default the `scope` parameter to `openid profile email`. This is to make the 'Last Logged in With' window work.
+
+## [v10.23.1](https://github.com/auth0/lock/tree/v10.23.1) (2017-10-12)
+[Full Changelog](https://github.com/auth0/lock/compare/v10.23.0...v10.23.1)
+
+
+**Fixed**
+- Using correct suffix for animation [\#1146](https://github.com/auth0/lock/pull/1146) ([luisrudge](https://github.com/luisrudge))
+
+
+## [v10.23.0](https://github.com/auth0/lock/tree/v10.23.0) (2017-10-12)
+[Full Changelog](https://github.com/auth0/lock/compare/v10.22.0...v10.23.0)
+
+
+**Changed**
+- Pinning react version 15.6.2 [\#1142](https://github.com/auth0/lock/pull/1142) ([luisrudge](https://github.com/luisrudge))
+- upgrade auth0.js [\#1137](https://github.com/auth0/lock/pull/1137) ([luisrudge](https://github.com/luisrudge))
+- Upgrade react version [\#1135](https://github.com/auth0/lock/pull/1135) ([luisrudge](https://github.com/luisrudge))
+
+**Fixed**
+- Fix defaultUrl sending hash content [\#1132](https://github.com/auth0/lock/pull/1132) ([luisrudge](https://github.com/luisrudge))
+
+
+### ** NOTICE ** 
+We're trying to figure it out how to help customers that want to upgrade to react@16. The ideal would be to move react and react-dom to peerDependencies, but this would be a breaking change for most of our customers, so we're thinking this through.
+
+In the meantime, react@16 works just fine with this codebase. You'll just have to bundle both versions if you're not using yarn. If you are using yarn, however, you can use the `resolutions` field and pin react@16 to your repo.
+
+```
+{
+  "name": "test-test",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "auth0-lock": "^10.23.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-scripts": "^1.0.14"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "resolutions": {
+    "react": "16.0.0",
+    "react-dom": "16.0.0"
+  }
+}
+```
+
+
+## [v10.22.0](https://github.com/auth0/lock/tree/v10.22.0) (2017-09-26)
+[Full Changelog](https://github.com/auth0/lock/compare/v10.21.1...v10.22.0)
+
+
+**Added**
+- Adding oidcConformant readme entry [\#1119](https://github.com/auth0/lock/pull/1119) ([luisrudge](https://github.com/luisrudge))
+
+**Changed**
+- Make cross origin authentication the default in OIDC mode [\#1124](https://github.com/auth0/lock/pull/1124) ([luisrudge](https://github.com/luisrudge))
+
+
+## [v10.21.1](https://github.com/auth0/lock/tree/v10.21.1) (2017-09-21)
+[Full Changelog](https://github.com/auth0/lock/compare/v10.21.0...v10.21.1)
+
+
+**Fixed**
+- Fix resolved connection not being a Map object [\#1116](https://github.com/auth0/lock/pull/1116) ([luisrudge](https://github.com/luisrudge))
+
+
+## [v10.21.0](https://github.com/auth0/lock/tree/v10.21.0) (2017-09-21)
+[Full Changelog](https://github.com/auth0/lock/compare/v10.20.0...v10.21.0)
+
+
+**Added**
+- Add Estonian Translations [\#1099](https://github.com/auth0/lock/pull/1099) ([meikoudras](https://github.com/meikoudras))
+
+**Changed**
+- Changed the connectionResolver to run onSubmit instead of onBlur [\#1113](https://github.com/auth0/lock/pull/1113) ([luisrudge](https://github.com/luisrudge))
+- Change translate for loginAtLabel [\#1110](https://github.com/auth0/lock/pull/1110) ([radu-carmina](https://github.com/radu-carmina))
+
+**Fixed**
+- Use resolvedConnection where available [\#1111](https://github.com/auth0/lock/pull/1111) ([lukevmorris](https://github.com/lukevmorris))
+- Fix a few svg errors when used with global css rule [\#1103](https://github.com/auth0/lock/pull/1103) ([luisrudge](https://github.com/luisrudge))
+- Links with # should use javascript:void(0) [\#1102](https://github.com/auth0/lock/pull/1102) ([luisrudge](https://github.com/luisrudge))
+- Improve Danish translation [\#1097](https://github.com/auth0/lock/pull/1097) ([havgry](https://github.com/havgry))
+- Fixed translations for Romanian and Slovenian [\#1092](https://github.com/auth0/lock/pull/1092) ([AdrianSima](https://github.com/AdrianSima))
+
+
 ## [v10.20.0](https://github.com/auth0/lock/tree/v10.20.0) (2017-08-11)
 [Full Changelog](https://github.com/auth0/lock/compare/v10.19.0...v10.20.0)
 

@@ -15,7 +15,6 @@ class Auth0APIClient {
       version: __VERSION__,
       lib_version: auth0.version
     };
-    this._useCrossAuth = !!(opts.overrides && opts.overrides.__useCrossAuth);
 
     this.client = new auth0.WebAuth({
       clientID: clientID,
@@ -34,7 +33,6 @@ class Auth0APIClient {
     this.authOpt = {
       popup: !opts.redirect,
       popupOptions: opts.popupOptions,
-      sso: opts.sso,
       nonce: opts.nonce,
       state: opts.state
     };
@@ -48,20 +46,15 @@ class Auth0APIClient {
 
     if (!options.username && !options.email) {
       if (this.authOpt.popup) {
-        this.client.popup.authorize(loginOptions, f);
+        this.client.popup.authorize({ ...loginOptions, owp: true }, f);
       } else {
         this.client.authorize(loginOptions, f);
       }
+    } else if (this.authOpt.popup) {
+      this.client.popup.loginWithCredentials(loginOptions, f);
     } else {
       loginOptions.realm = options.connection;
-      if (this._useCrossAuth) {
-        if (this.authOpt.popup) {
-          throw new Error('Cross origin login is not supported in popup mode');
-        }
-        this.client.login(loginOptions, f);
-      } else {
-        this.client.client.login(loginOptions, f);
-      }
+      this.client.login(loginOptions, f);
     }
   }
 
@@ -102,8 +95,7 @@ class Auth0APIClient {
   }
 
   getProfile(token, callback) {
-    const m = read(getEntity, 'lock', this.lockID);
-    l.emitUnrecoverableErrorEvent(m, '`getProfile` is deprecated for oidcConformant clients');
+    this.getUserInfo(token, callback);
   }
 
   getSSOData(...args) {
@@ -112,6 +104,10 @@ class Auth0APIClient {
 
   getUserCountry(cb) {
     return this.client.getUserCountry(cb);
+  }
+
+  checkSession(options, cb) {
+    return this.client.checkSession(options, cb);
   }
 }
 
