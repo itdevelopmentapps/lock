@@ -65,6 +65,10 @@ export default class SelectInput extends React.Component {
       return this.props.onClick(String.fromCharCode(e.keyCode).toLowerCase());
     }
   }
+
+  componentDidMount() {
+    window.scrollTo(0, 0);
+  }
 }
 
 // TODO: specify propTypes
