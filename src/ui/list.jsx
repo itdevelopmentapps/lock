@@ -91,6 +91,10 @@ export default class FiltrableList extends React.Component {
 }
 
 class List extends React.Component {
+  componentDidMount() {
+    window.scrollTo(0, 0);
+  }
+
   componentDidUpdate() {
     // Ensure that highlighted item is entirely visible
 
