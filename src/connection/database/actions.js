@@ -11,7 +11,7 @@ import {
   hasScreen,
   setScreen,
   shouldAutoLogin,
-  toggleTermsAcceptance as switchTermsAcceptance,
+  toggleTermsAcceptance as internalToggleTermsAcceptance,
   additionalSignUpFields
 } from './index';
 import * as i18n from '../../i18n';
@@ -64,7 +64,20 @@ export function signUp(id) {
     if (!additionalSignUpFields(m).isEmpty()) {
       params.user_metadata = {};
       additionalSignUpFields(m).forEach(x => {
-        params.user_metadata[x.get('name')] = c.getFieldValue(m, x.get('name'));
+        const storage = x.get('storage');
+        const fieldName = x.get('name');
+        const fieldValue = c.getFieldValue(m, x.get('name'));
+        switch (storage) {
+          case 'root':
+            params[fieldName] = fieldValue;
+            break;
+          default:
+            if (!params.user_metadata) {
+              params.user_metadata = {};
+            }
+            params.user_metadata[fieldName] = fieldValue;
+            break;
+        }
       });
     }
 
@@ -220,7 +233,7 @@ export function cancelMFALogin(id) {
 }
 
 export function toggleTermsAcceptance(id) {
-  swap(updateEntity, 'lock', id, switchTermsAcceptance);
+  swap(updateEntity, 'lock', id, internalToggleTermsAcceptance);
 }
 
 export function showLoginMFAActivity(id, fields = ['mfa_code']) {
