@@ -23,7 +23,7 @@ From CDN
 
 ```html
 <!-- Latest patch release (recommended for production) -->
-<script src="https://cdn.auth0.com/js/lock/11.17.2/lock.min.js"></script>
+<script src="https://cdn.auth0.com/js/lock/11.17.3/lock.min.js"></script>
 ```
 
 From [npm](https://npmjs.org)
@@ -36,6 +36,7 @@ Then you can import `Auth0Lock` or `Auth0LockPasswordless` like this:
 
 ```js
 import Auth0Lock from 'auth0-lock';
+// OR
 import { Auth0Lock } from 'auth0-lock';
 import { Auth0LockPasswordless } from 'auth0-lock';
 ```
